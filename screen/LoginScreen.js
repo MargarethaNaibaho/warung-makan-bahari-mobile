@@ -22,7 +22,7 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async(e) => {
         if(!username || !password){
-            Alert.alert('Error', 'Email dan password harus diisi')
+            Alert.alert('Error', 'Email and password is required')
             return;
         }
 
@@ -83,8 +83,8 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
 
             <View style={styles.toRegister}>
-                <Text style={styles.toRegisterText}>Belum punya akun?</Text>
-                <Text style={styles.toRegisterButton} onPress={() => navigation.navigate('Register')}> Register di sini</Text>
+                <Text style={styles.toRegisterText}>Don't have an account?</Text>
+                <Text style={styles.toRegisterButton} onPress={() => navigation.navigate('Register')}> Register here</Text>
             </View>
 
             {errorMessage && 
@@ -175,5 +175,18 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 10,
         top: -20
-    }
+    },
+    invalidAlert: {
+        backgroundColor: '#ffcdd2',
+        paddingHorizontal: width * 0.05,
+        height: height * 0.05,
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#d32f2f',
+        borderRadius: 4,
+        marginTop: 12
+    },
+    invalidAlertText: {
+        color: '#d32f2f'
+    },
 })
