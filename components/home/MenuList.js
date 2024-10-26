@@ -8,12 +8,14 @@ import CartList from './CartList';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTransaction } from '../../redux/transactionSlice';
 import { useNavigation } from '@react-navigation/native';
+import OrderSuccess from './OrderSuccess';
 
-const MenuList = ({ menus, tables, customerId }) => {
+const MenuList = ({ menus, tables }) => {
   const navigation = useNavigation();
 
   const [counts, setCounts] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
   const dispatch = useDispatch();
   const statusTransactions = useSelector((state) => state.transaction.status);
@@ -88,6 +90,16 @@ const MenuList = ({ menus, tables, customerId }) => {
 
   }, [counts]);
 
+  useEffect(() => {
+    if (isSuccessModalVisible) {
+      const timer = setTimeout(() => {
+        setIsSuccessModalVisible(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccessModalVisible]);
+
   const increment = (menuId) => {
     setCounts((prevCounts) => ({
       ...prevCounts,
@@ -122,8 +134,10 @@ const MenuList = ({ menus, tables, customerId }) => {
         // console.log('menuCounts removed');
         setCounts({});
         setIsModalVisible(false); 
+        setIsSuccessModalVisible(true);
+        // setTimeout(() => setIsSuccessModalVisible(false), 3000)
         // console.log('Counts after reset:', counts);
-        navigation.navigate('Main');
+        // navigation.navigate('Main');
       });
     } catch(e){
         console.error('Error when saving order: ', e);
@@ -192,6 +206,12 @@ const MenuList = ({ menus, tables, customerId }) => {
           counts={counts}
           tables={tables}
           onCheckout={handleCheckout}
+        />
+      )}
+
+      {isSuccessModalVisible && (
+        <OrderSuccess
+          isVisible={isSuccessModalVisible}
         />
       )}
     </>

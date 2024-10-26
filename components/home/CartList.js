@@ -61,7 +61,7 @@ const CartList = ({isVisible, menus, onClose, onCheckout, increment, decrement, 
       orderDetails: checkoutMenu
     })
 
-    console.log('Checkout json: ', jsonString);
+    // console.log('Checkout json: ', jsonString);
     return jsonString;
   }
 
