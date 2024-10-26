@@ -55,7 +55,7 @@ const transactionSlice = createSlice({
 
             .addCase(
                 createTransaction.fulfilled, (state, action) => {
-                    state.transactions = action.payload.data;
+                    state.transactions.push(action.payload.data);
                     state.status = 'succeeded';
                     state.error = null
                 }

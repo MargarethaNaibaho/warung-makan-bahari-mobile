@@ -52,7 +52,7 @@ export const AuthProvider = (({children}) => {
                 const { token, customerId, role} = data;
                 await AsyncStorage.setItem('token', data.token);
                 await AsyncStorage.setItem('idCustomer', JSON.stringify(data.customerId));
-                console.log(customerId)
+                // console.log(customerId)
                 dispatch({
                     type: 'LOGIN',
                     payload: {
