@@ -36,6 +36,8 @@ const TransactionList = () => {
         return new Date(value).toLocaleString('en-US', options);
     };
 
+    const sortedTransactions = [...transactions].sort((a, b) => new Date(b.transDate) - new Date(a.transDate))
+
     const RenderTransaction = memo(({ item }) => {
         const totalAmount = item.orderDetails.reduce((total, detail) => total + (detail.price * detail.quantity), 0);
         const formattedDate = formatDate(item.transDate);
@@ -66,7 +68,7 @@ const TransactionList = () => {
     return (
         <View style={styles.container}>
             <FlatList
-                data={transactions}
+                data={sortedTransactions}
                 renderItem={({item}) => <RenderTransaction item={item}/>}
                 keyExtractor={(item) => item.orderId.toString()}
             />
