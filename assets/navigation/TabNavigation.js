@@ -15,7 +15,7 @@ const TabNavigation = () => {
                 let iconName;
                 if(route.name === "Home"){
                     iconName = focused ? "restaurant" : "restaurant-outline";
-                } else if(route.name === "Transaksi"){
+                } else if(route.name === "Transaction"){
                     iconName = focused ? "fast-food" : "fast-food-outline" ;
                 } else if(route.name === "Profile"){
                     iconName = focused ? "person" : "person-outline";
@@ -33,7 +33,7 @@ const TabNavigation = () => {
         })}
     >
         <Tab.Screen name={"Home"} component={HomeScreen} />
-        <Tab.Screen name={"Transaksi"} component={TransactionScreen} />
+        <Tab.Screen name={"Transaction"} component={TransactionScreen} />
         <Tab.Screen name={"Profile"} component={ProfileScreen} />
     </Tab.Navigator>
   )

@@ -20,6 +20,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: width * 0.05,
-    justifyContent: 'center'
+    paddingVertical: height * 0.02
   },
 })

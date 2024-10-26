@@ -77,7 +77,7 @@ const MenuList = ({ menus, tables }) => {
       try {
         await AsyncStorage.setItem('menuCounts', JSON.stringify(counts));
         const savedCounts = await AsyncStorage.getItem('menuCounts')
-        console.log(JSON.parse(savedCounts))
+        // console.log(JSON.parse(savedCounts))
 
         // const customerId = await AsyncStorage.getItem('customerId')
         // console.log(JSON.parse(customerId))
