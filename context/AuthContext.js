@@ -40,7 +40,7 @@ export const AuthProvider = (({children}) => {
     const [authState, dispatch] = useReducer(authReducer, {
         isLoggedIn: false,
         token: null,
-        user: null
+        user: null,
     })
 
     const login = async(username, password) => {
@@ -49,16 +49,18 @@ export const AuthProvider = (({children}) => {
             const {data} = response.data;
 
             if(data){
+                const { token, customerId, role} = data;
                 await AsyncStorage.setItem('token', data.token);
-                console.log(data)
+                await AsyncStorage.setItem('idCustomer', JSON.stringify(data.customerId));
+                console.log(customerId)
                 dispatch({
                     type: 'LOGIN',
                     payload: {
                         token: data.token,
-                        user: data.role
+                        user: data.role,
                     }
                 })
-                return true;
+                return customerId;
 
             } else{
                 throw new Error('Login failed: No Token Received')
@@ -90,6 +92,8 @@ export const AuthProvider = (({children}) => {
 
     const logout = async () => {
         await AsyncStorage.removeItem('token')
+        await AsyncStorage.removeItem('menuCounts')
+        await AsyncStorage.removeItem('customerId');
         // console.log(AsyncStorage.getItem('token'))
         dispatch({type: 'LOGOUT'})
     }

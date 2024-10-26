@@ -1,34 +1,40 @@
-import { Dimensions, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMenu } from '../redux/menuSlice'
 import MenuList from '../components/home/MenuList'
+import { fetchTable } from '../redux/tableSlice'
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const menus = useSelector((state) => state.menu.menus);
-  const status = useSelector((state) => state.menu.status);
-  const error = useSelector((state) => state.menu.error);
+  const statusMenus = useSelector((state) => state.menu.status);
+  const errorMenus = useSelector((state) => state.menu.error);
+
+  const tables = useSelector((state) => state.table.tables);
+  const statusTables = useSelector((state) => state.table.status);
+  const errorTables = useSelector((state) => state.table.error);
 
   useEffect(() => {
     dispatch(fetchMenu())
+    dispatch(fetchTable())
   }, [dispatch])
 
-  if(status === 'failed'){
-    return <Text>Error: {error}</Text>
+  if(statusMenus === 'failed'){
+    return <Text>Error: {errorMenus}</Text>
   }
-  console.log(menus)
+
+  if(statusTables === 'failed'){
+    return <Text>Error: {errorTables}</Text>
+  }
+  // console.log(menus)
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.title}>Warung Makan Bahari</Text>
-        <Ionicons name='cart' size={24} color='#92400E' />
-      </View>
-
-      <MenuList menus={menus} />
+      <MenuList menus={menus} tables={tables}/>
+      <StatusBar barStyle={'dark-content'} backgroundColor={'white'}/>
     </SafeAreaView>
   )
 }
@@ -42,17 +48,5 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: width * 0.05,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    marginTop: 20,
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  title: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
-    color: "#92400E",
   },
 })

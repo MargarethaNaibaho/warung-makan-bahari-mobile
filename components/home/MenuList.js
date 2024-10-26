@@ -2,9 +2,58 @@ import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-nativ
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { Buffer } from 'buffer';
+import { Ionicons } from '@expo/vector-icons';
+import CartList from './CartList';
+import { useDispatch, useSelector } from 'react-redux';
+import { createTransaction } from '../../redux/transactionSlice';
+import { useNavigation } from '@react-navigation/native';
 
-const MenuList = ({ menus }) => {
+const MenuList = ({ menus, tables, customerId }) => {
+  const navigation = useNavigation();
+
   const [counts, setCounts] = useState({});
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const dispatch = useDispatch();
+  const statusTransactions = useSelector((state) => state.transaction.status);
+  // const [userId, setUserId] = useState('');
+
+  // useEffect(() => {
+  //   const getUserId = async() => {
+  //     try{
+  //       const token = await AsyncStorage.getItem('token')
+  //       const parts = token.split('.').map(part => Buffer.from(part.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString())
+  //       const payload = JSON.parse(parts[1]);
+  //       setUserId(payload.sub)
+  //     } catch(error){
+  //       console.log(error)
+  //     }
+  //   }
+  //   getUserId()
+  // }, [])
+
+//   const logAllAsyncStorage = async () => {
+//     try {
+//         // Mengambil semua kunci
+//         const keys = await AsyncStorage.getAllKeys();
+
+//         // Mengambil semua nilai yang sesuai dengan kunci
+//         const values = await AsyncStorage.multiGet(keys);
+
+//         // Mencetak semua kunci dan nilai ke konsol
+//         values.forEach(([key, value]) => {
+//             console.log(`Key: ${key}, Value: ${value}`);
+//         });
+//     } catch (error) {
+//         console.error('Error fetching AsyncStorage:', error);
+//     }
+// };
+
+// // Panggil fungsi ini di tempat yang sesuai, misalnya setelah login
+// logAllAsyncStorage();
+
+
 
   useEffect(() => {
     const loadCounts = async () => {
@@ -25,6 +74,12 @@ const MenuList = ({ menus }) => {
     const saveCounts = async () => {
       try {
         await AsyncStorage.setItem('menuCounts', JSON.stringify(counts));
+        const savedCounts = await AsyncStorage.getItem('menuCounts')
+        console.log(JSON.parse(savedCounts))
+
+        // const customerId = await AsyncStorage.getItem('customerId')
+        // console.log(JSON.parse(customerId))
+
       } catch (error) {
         console.error("Error saving counts to AsyncStorage: ", error);
       }
@@ -41,16 +96,51 @@ const MenuList = ({ menus }) => {
   };
 
   const decrement = (menuId) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [menuId]: Math.max(0, (prevCounts[menuId] || 0) - 1),
-    }));
+    setCounts((prevCounts) => {
+      const newCounts = {...prevCounts}
+      if(newCounts[menuId] > 1){
+        newCounts[menuId] -= 1;
+      } else{
+        delete newCounts[menuId];
+      }
+      return newCounts
+    })
   };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
   };
 
+  const handleCartList = () => {
+    setIsModalVisible(!isModalVisible)
+  }
+
+  const handleCheckout = async(data) => {
+    try{
+      dispatch(createTransaction(data));
+      // console.log(statusTransactions)
+      // if(statusTransactions === 'succeeded'){
+      //   console.log('Order okey');
+      //   await AsyncStorage.removeItem('menuCounts');
+      //   handleCartList();
+      //   navigation.navigate('Main')
+      // }
+    } catch(e){
+        console.error('Error when saving order: ', e);
+    }
+  }
+
+  useEffect(() => {
+    if(statusTransactions === 'succeeded'){
+      AsyncStorage.removeItem('menuCounts').then(() => {
+        console.log('menuCounts removed');
+        handleCartList();
+        setCounts({})
+        navigation.navigate('Main')
+      })
+    }
+  }, [statusTransactions])
+  
   const renderMenuItem = ({ item }) => {
     const count = counts[item.menuId] || 0;
 
@@ -85,19 +175,37 @@ const MenuList = ({ menus }) => {
   };
 
   return (
-    <FlatList
-      data={menus}
-      keyExtractor={(item) => item.menuId ? String(item.menuId) : String(Math.random())}
-      renderItem={renderMenuItem}
-      numColumns={2}
-      columnWrapperStyle={styles.row}
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={
-        <View style={styles.emptyMessageContainer}>
-          <Text style={styles.emptyMessageText}>No Menus Found</Text>
-        </View>
-      }
-    />
+    <>
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Warung Makan Bahari</Text>
+        <Ionicons name='cart' size={24} color='#92400E' onPress={handleCartList} />
+      </View>
+      <FlatList
+        data={menus}
+        keyExtractor={(item) => item.menuId ? String(item.menuId) : String(Math.random())}
+        renderItem={renderMenuItem}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyMessageContainer}>
+            <Text style={styles.emptyMessageText}>No Menus Found</Text>
+          </View>
+        }
+      />
+      {isModalVisible && (
+        <CartList
+          isVisible={isModalVisible}
+          menus={menus}
+          onClose={handleCartList}
+          increment={increment}
+          decrement={decrement}
+          counts={counts}
+          tables={tables}
+          onCheckout={handleCheckout}
+        />
+      )}
+    </>
   );
 };
 
@@ -114,6 +222,19 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginHorizontal: 10,
     width: (width / 2) - 20,
+  },
+
+  headerContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    marginTop: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  title: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 20,
+    color: "#92400E",
   },
   row: {
     justifyContent: 'center',

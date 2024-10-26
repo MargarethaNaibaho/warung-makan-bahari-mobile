@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Dimensions, Image, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -68,6 +68,7 @@ const RegisterScreen = ({navigation}) => {
     }
     return (
         <SafeAreaView style={styles.container}>
+            <StatusBar barStyle={'dark-content'} backgroundColor={'white'}/>
             <Image source={require('../assets/logo.png')} style={styles.image} />
 
             <Text style={styles.title2}>Warung Makan Bahari</Text>

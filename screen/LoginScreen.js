@@ -1,8 +1,9 @@
-import { Alert, Dimensions, Image, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Alert, Dimensions, Image, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = ({ navigation }) => {
     const { login, isLoggedIn } = useAuth();
@@ -28,7 +29,6 @@ const LoginScreen = ({ navigation }) => {
 
         try{
             const success = await login(username, password)
-            console.log(success)
             if(success){
                 navigation.replace('Main')
             }  else{
@@ -40,7 +40,8 @@ const LoginScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle={'dark-content'} backgroundColor={'white'}/>
             <Image source={require('../assets/logo.png')} style={styles.image} />
 
             <Text style={styles.title2}>Warung Makan Bahari</Text>
@@ -92,7 +93,7 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.invalidAlertText}>{errorMessage}</Text>
             </View>
             }
-        </View>
+        </SafeAreaView>
     )
 }
 

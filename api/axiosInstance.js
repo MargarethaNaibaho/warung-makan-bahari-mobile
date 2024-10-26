@@ -4,7 +4,7 @@ import axios from "axios";
 import { Alert } from "react-native";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://10.10.102.123:8080/api/v1',
+    baseURL: 'http://192.168.100.232:8080/api/v1',
 })
 
 //untuk menangani tiap request

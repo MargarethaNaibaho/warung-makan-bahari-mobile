@@ -1,4 +1,4 @@
-import { StatusBar, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { useAuth } from '../context/AuthContext'
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,13 +11,8 @@ const ProfileScreen = ({navigation}) => {
     navigation.replace('Login')
   }
   return (
-    <SafeAreaView style={{
-        paddingTop: 30,
-        paddingHorizontal: 25,
-        backgroundColor: '#1E1E2D',
-        flex: 1 //ini supaya bisa keseluruhan layar punya warna black
-    }}>
-        <StatusBar style="auto" />
+    <SafeAreaView style={styles.container}>
+        <StatusBar barStyle={'dark-content'} backgroundColor={'white'}/>
         <View
             style={{
                 backgroundColor: 'white',
@@ -55,7 +50,15 @@ const ProfileScreen = ({navigation}) => {
 
 export default ProfileScreen
 
+const { width, height } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: width * 0.05,
+    justifyContent: 'center'
+  },
   button: {
     alignItems: 'center',
     justifyContent: 'center',
