@@ -117,29 +117,18 @@ const MenuList = ({ menus, tables, customerId }) => {
 
   const handleCheckout = async(data) => {
     try{
-      dispatch(createTransaction(data));
-      // console.log(statusTransactions)
-      // if(statusTransactions === 'succeeded'){
-      //   console.log('Order okey');
-      //   await AsyncStorage.removeItem('menuCounts');
-      //   handleCartList();
-      //   navigation.navigate('Main')
-      // }
+      await dispatch(createTransaction(data)).unwrap();
+      AsyncStorage.removeItem('menuCounts').then(() => {
+        // console.log('menuCounts removed');
+        setCounts({});
+        setIsModalVisible(false); 
+        // console.log('Counts after reset:', counts);
+        navigation.navigate('Main');
+      });
     } catch(e){
         console.error('Error when saving order: ', e);
     }
   }
-
-  useEffect(() => {
-    if(statusTransactions === 'succeeded'){
-      AsyncStorage.removeItem('menuCounts').then(() => {
-        console.log('menuCounts removed');
-        handleCartList();
-        setCounts({})
-        navigation.navigate('Main')
-      })
-    }
-  }, [statusTransactions])
   
   const renderMenuItem = ({ item }) => {
     const count = counts[item.menuId] || 0;
