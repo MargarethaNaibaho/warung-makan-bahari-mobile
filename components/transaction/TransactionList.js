@@ -86,14 +86,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flex: 1,
     },
-    itemContainer: {
-        marginBottom: 10
-    },
     line: {
         height: 1,
         backgroundColor: '#d3d3d3',
         width: '100%',
-        marginTop: 15,
+        marginTop: 25,
+        marginBottom: 25,
         marginHorizontal: width * 0.05,
         marginVertical: height * 0.02
     },
