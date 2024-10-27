@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer, useState } from "react";
 import axiosInstance from '../api/axiosInstance';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -42,6 +43,8 @@ export const AuthProvider = (({children}) => {
         token: null,
         user: null,
     })
+
+    const [isVisible, setIsVisible] = useState(false);
 
     const login = async(username, password) => {
         try{
@@ -94,8 +97,22 @@ export const AuthProvider = (({children}) => {
         await AsyncStorage.removeItem('token')
         await AsyncStorage.removeItem('menuCounts')
         await AsyncStorage.removeItem('customerId');
+        setIsVisible(false)
         // console.log(AsyncStorage.getItem('token'))
         dispatch({type: 'LOGOUT'})
+    }
+
+    const checkTokenExpiration = async() => {
+        const token = await AsyncStorage.getItem('token')
+        if(token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+
+            if(decodedToken.exp < currentTime) {
+                setIsVisible(true);
+                dispatch({type: 'LOGOUT'})
+            }
+        }
     }
 
     useEffect(() => {
@@ -112,13 +129,17 @@ export const AuthProvider = (({children}) => {
             }
         }
         checkToken();
+        const interval  = setInterval(checkTokenExpiration, 30000)
+        return () => clearInterval(interval)
     }, [])
 
     const value = {
         ...authState,
         login,
         logout,
-        register
+        register,
+        isVisible,
+        setIsVisible
     }
 
     return (

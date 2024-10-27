@@ -7,9 +7,10 @@ import TabNavigation from './assets/navigation/TabNavigation';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import RegisterScreen from './screen/RegisterScreen';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Provider } from 'react-redux';
 import store from './store';
+import JwtExpiredModal from './components/JwtExpiredModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,34 +48,42 @@ export default function App() {
     );
   }
 
-
   return (
     <AuthProvider>
       <Provider store={store}>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName='Login'>
-            <Stack.Screen 
-              name='Login'
-              component={LoginScreen}
-              options={{headerShown: false}}
-            />
-
-            <Stack.Screen 
-              name='Register'
-              component={RegisterScreen}
-              options={{headerShown: false}}
-            />
-
-            <Stack.Screen
-              name='Main'
-              component={TabNavigation}
-              options={{headerShown: false, gestureEnabled: false}}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <MainApp />
       </Provider>
     </AuthProvider>
   );
+}
+
+function MainApp() {
+  const { isVisible } = useAuth()
+  
+  return (
+    <NavigationContainer>
+      <JwtExpiredModal isVisible={isVisible}/>
+      <Stack.Navigator initialRouteName='Login'>
+        <Stack.Screen 
+          name='Login'
+          component={LoginScreen}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen 
+          name='Register'
+          component={RegisterScreen}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+          name='Main'
+          component={TabNavigation}
+          options={{headerShown: false, gestureEnabled: false}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
 }
 
 const styles = StyleSheet.create({
