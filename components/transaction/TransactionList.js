@@ -1,7 +1,8 @@
 import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { memo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTransaction } from '../../redux/transactionSlice';
+import { fetchTransaction, fetchTransactionByCustomerId } from '../../redux/transactionSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TransactionList = () => {
     const dispatch = useDispatch();
@@ -11,10 +12,24 @@ const TransactionList = () => {
 
     useEffect(() => {
         const getTransactions = async() => {
-            dispatch(fetchTransaction());
+            try {
+                const idCustomer = await AsyncStorage.getItem("idCustomer")
+                console.log(idCustomer)
+                if(!idCustomer){
+                    console.error("Customer ID not found")
+                    return;
+                }
+
+                dispatch(fetchTransactionByCustomerId(idCustomer));
+                console.log("dapat nih")
+                
+            } catch(error){
+                console.error("Failed to fetch transaction: ", error)
+            }
+            // dispatch(fetchTransaction())
         }
         getTransactions()
-    }, []);
+    }, [dispatch]);
 
     if (statusTransactions === 'failed') {
         return <Text>Error: {errorTransactions}</Text>;
@@ -67,11 +82,14 @@ const TransactionList = () => {
 
     return (
         <View style={styles.container}>
-            <FlatList
+            {transactions 
+            ? <FlatList
                 data={sortedTransactions}
                 renderItem={({item}) => <RenderTransaction item={item}/>}
                 keyExtractor={(item) => item.orderId.toString()}
             />
+            : <Text>No data found</Text> 
+            }
         </View>
     );
 };

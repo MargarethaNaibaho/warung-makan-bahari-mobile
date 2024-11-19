@@ -5,7 +5,7 @@ import { Alert } from "react-native";
 // import { useAuth } from "../context/AuthContext";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://192.168.82.202:8080/api/v1',
+    baseURL: 'http://10.10.102.123:8080/api/v1',
 })
 
 //untuk menangani tiap request

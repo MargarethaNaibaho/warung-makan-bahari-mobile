@@ -29,6 +29,21 @@ export const fetchTransaction = createAsyncThunk(
     }
 )
 
+export const fetchTransactionByCustomerId = createAsyncThunk(
+    'transaction/fetchTransactionByCustomerId',
+    async(idCustomer, {rejectedWithValue}) => {
+        try{
+            const response = await axiosInstance.get(
+                `/transaction/customer/${idCustomer}`
+            )
+            console.log(response)
+            return response.data;
+        } catch(error) {
+            return rejectedWithValue(error.response.data);
+        }
+    }
+)
+
 const transactionSlice = createSlice({
     name: 'transaction',
     initialState: {
@@ -47,6 +62,21 @@ const transactionSlice = createSlice({
             )
             .addCase(
                 fetchTransaction.rejected, (state, action) => {
+                    state.transactions = 'failed'
+                    state.error = action.payload
+                }
+            )
+
+
+            .addCase(
+                fetchTransactionByCustomerId.fulfilled, (state, action) => {
+                    state.transactions = action.payload.data;
+                    state.status = 'succeeded';
+                    state.error = null
+                }
+            )
+            .addCase(
+                fetchTransactionByCustomerId.rejected, (state, action) => {
                     state.transactions = 'failed'
                     state.error = action.payload
                 }

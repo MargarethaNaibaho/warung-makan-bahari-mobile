@@ -59,7 +59,7 @@ export default function App() {
 
 function MainApp() {
   const { isVisible } = useAuth()
-  
+
   return (
     <NavigationContainer>
       <JwtExpiredModal isVisible={isVisible}/>
